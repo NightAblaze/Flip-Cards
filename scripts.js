@@ -99,13 +99,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // colours available
     const colours = ["red", "yellow", "blue", "lime", "green", "pink", "purple", "lightblue", "darkblue", "orange"];
 
-    const amountShapes = 1
-    const amountColours = 1
+    const amountShapes = 4
+    const amountColours = 3
 
     // create cards
     for (let i = 0; i < 16; i++){
         cardArray[i] = {id: i, shape: shapes[Math.floor(Math.random() * amountShapes)], colour: colours[Math.floor(Math.random() * amountColours)]}
     }
+
+    // creating a copy of cardArray to keep track of cards still playable for scorable function
+    let playableCards = [...cardArray];
      
     // assign grid variable
     const grid = document.querySelector('.grid');
@@ -128,12 +131,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // check for match
     function checkForMatch(){
         let cards = grid.querySelectorAll('svg');
-        let playableCards = cardArray;
-        console.log(playableCards); // testing
+
         let remove = "";
         const optionOneId = cardsChosenId[0];
         const optionTwoId = cardsChosenId[1];
-        console.log(cardsChosenId); // testing
 
         if(cardsChosen[0].shape === cardsChosen[1].shape && cardsChosen[0].colour === cardsChosen[1].colour){
             alert("You found a perfect match!");
@@ -142,38 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
             cards[optionOneId].removeEventListener("click", flipCard);      // prevents card being selected again
             cards[optionTwoId].removeEventListener("click", flipCard);      // prevents card being selected again
                 
-                // reduces playableCards array for scorable function
-                remove = playableCards.findIndex(x => x.id == cardsChosenId[0]);
-                  
-                console.log(remove); // testing
-
-                if (remove > -1) { // only splice array when item is found
-                    playableCards.splice(remove, 1);
-                }
-
-                console.log(playableCards); //testing
-
-                remove = playableCards.findIndex(x => x.id == cardsChosenId[1]);
-                if (remove > -1) { // only splice array when item is found
-                    playableCards.splice(remove, 1);
-                }
-                console.log(playableCards); //testing
+            reducePlayableCards()
 
             p1Score = p1Score + 3;
-            
-            console.log(playableCards[2].shape)
 
-                //check there are still cards that are scorable
-                for (let k = 0; k < playableCards.length; k++){
-                    for (l = k; l < playableCards.length; l++){
-                        if(playableCards[k].shape == playableCards[l+1].shape || playableCards[k].colour == playableCards[l+1].colour){
-                            break;
-                        }
-                        else if (k == playableCards.length-1 && l == playableCards.length-1){
-                            alert("There are no more scorable pairs remaining!")
-                        }
-                    }
-                }
+            scorable()
         }
         else if(cardsChosen[0].shape === cardsChosen[1].shape){
             alert("You found a shape match!");
@@ -182,36 +156,11 @@ document.addEventListener('DOMContentLoaded', () => {
             cards[optionOneId].removeEventListener("click", flipCard);      // prevents card being selected again
             cards[optionTwoId].removeEventListener("click", flipCard);      // prevents card being selected again
 
-                // reduces playableCards array for scorable function
-                remove = playableCards.findIndex(x => x.id == cardsChosenId[0]);
-    
-                console.log(remove); // testing
-
-                if (remove > -1) { // only splice array when item is found
-                    playableCards.splice(remove, 1);
-                }
-
-                console.log(playableCards); //testing
-
-                remove = playableCards.findIndex(x => x.id == cardsChosenId[1]);
-                if (remove > -1) { // only splice array when item is found
-                    playableCards.splice(remove, 1);
-                }
-                console.log(playableCards); //testing
+            reducePlayableCards()
 
             p1Score = p1Score + 1;
 
-                //check there are still cards that are scorable
-                for (let k = 0; k < playableCards.length; k++){
-                    for (l = k; l < playableCards.length; l++){
-                        if(playableCards[k].shape == playableCards[l+1].shape || playableCards[k].colour == playableCards[l+1].colour){
-                            break;
-                        }
-                        else if (k == playableCards.length-1 && l == playableCards.length-1){
-                            alert("There are no more scorable pairs remaining!")
-                        }
-                    }
-                }
+            scorable()
         }
         else if(cardsChosen[0].colour === cardsChosen[1].colour){
             alert("You found a colour match!");
@@ -220,35 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
             cards[optionOneId].removeEventListener("click", flipCard);      // prevents card being selected again
             cards[optionTwoId].removeEventListener("click", flipCard);      // prevents card being selected again
 
-                // reduces playableCards array for scorable function
-                remove = playableCards.findIndex(x => x.id == cardsChosenId[0]);
-        
-                console.log(remove); // testing
-
-                if (remove > -1) { // only splice array when item is found
-                    playableCards.splice(remove, 1);
-                }
-
-                console.log(playableCards); //testing
-
-                remove = playableCards.findIndex(x => x.id == cardsChosenId[1]);
-                if (remove > -1) { // only splice array when item is found
-                    playableCards.splice(remove, 1);
-                }
-                console.log(playableCards); //testing
+            reducePlayableCards()
 
             p1Score = p1Score + 1;
-            //check there are still cards that are scorable
-            for (let k = 0; k < playableCards.length; k++){
-                for (l = k; l < playableCards.length; l++){
-                    if(playableCards[k].shape == playableCards[l+1].shape || playableCards[k].colour == playableCards[l+1].colour){
-                        break;
-                    }
-                    else if (k == playableCards.length-1 && l == playableCards.length-1){
-                        alert("There are no more scorable pairs remaining!")
-                    }
-                }
-            }
+
+            scorable()
         }
         else{
             alert("Sorry, try again");
@@ -260,6 +185,40 @@ document.addEventListener('DOMContentLoaded', () => {
         cardsChosen = [];
         cardsChosenId = [];   
         console.log(p1Score); //testing    
+    }
+
+    // reduces playableCards array for scorable function
+    function reducePlayableCards(){
+        remove = playableCards.findIndex(x => x.id == cardsChosenId[0]);
+
+        if (remove > -1) { // only splice array when item is found
+            playableCards.splice(remove, 1);
+        }
+
+        remove = playableCards.findIndex(x => x.id == cardsChosenId[1]);
+        if (remove > -1) { // only splice array when item is found
+            playableCards.splice(remove, 1);
+        }
+
+        console.log(playableCards); //testing
+        console.log(cardArray); //testing        
+    }
+
+
+    //check there are still cards that are scorable
+    function scorable(){
+        for (let k = 0; k < playableCards.length-1; k++){
+            for (l = k; l < playableCards.length-1; l++){
+                if(playableCards[k].shape == playableCards[l+1].shape || playableCards[k].colour == playableCards[l+1].colour){
+                    console.log(playableCards[k].shape == playableCards[l+1].shape);
+                    console.log(playableCards[k].colour == playableCards[l+1].colour);
+                    return;
+                }
+                else if (k == playableCards.length-2 && l == playableCards.length-2){
+                    alert("There are no more scorable pairs remaining!");
+                }
+            }
+        }
     }
 
     // flip card
