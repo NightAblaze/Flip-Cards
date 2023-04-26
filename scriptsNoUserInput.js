@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     let cardArray = [];
-    let playableCards = [];
     let cardsChosen = [];
     let cardsChosenId = [];
     let playerTurn = 1;
@@ -13,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("p3Score").innerHTML = p3Score;
     document.getElementById("p4Score").innerHTML = p4Score;
 
-    //creates the back of the card
+    //create the back of the card
     const cardback = document.createElementNS('http://www.w3.org/2000/svg', 'text')
     cardback.setAttribute('x','25');
     cardback.setAttribute('y','80');
@@ -107,51 +106,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const colours = ["red", "yellow", "blue", "lime", "green", "pink", "purple", "lightblue", "darkblue", "orange"];
 
     // board variables
-    let amountShapes = 3;
+    let amountShapes = 4;
     let amountColours = 3;
     let numberOfCards = 16;
-    let players = 1;
-        
-    // assign grid variable
-    const grid = document.querySelector('#grid');
+    let players = 2;
     
-    // Binds the button's click event to the generateGame function
-    document.getElementById("generate").addEventListener("click",a=>{generateGame(
-        document.getElementById('shapes').value,
-        document.getElementById('colours').value,
-        document.querySelector('input[name="size"]:checked').value,
-        document.querySelector('input[name="players"]:checked').value,
-    )});
+    scoreboard(players);
 
-    // gather game options
-    function generateGame(numberOfShapes, numberOfColours, size, numberOfPlayers){
-        amountShapes = numberOfShapes;
-        amountColours = numberOfColours;
-        numberOfCards = (size * size);
-        boardDimension = (size * 106);
-        players = numberOfPlayers;
-        
-        document.getElementById("grid").style.height = boardDimension + "px";
-        document.getElementById("grid").style.width = boardDimension + "px";
-
-        // document.getElementById("p1").style.display = "block";
-
-        scoreboard();
-
-        document.getElementById("gameOptions").style.display = "none";
-
-        // create the cards
-        for (let i = 0; i < numberOfCards; i++){
-            cardArray[i] = {id: i, shape: shapes[Math.floor(Math.random() * amountShapes)], colour: colours[Math.floor(Math.random() * amountColours)]};
-        }
-
-        // creating a copy of cardArray to keep track of cards still playable for scorable function
-        playableCards = [...cardArray];
-
-        createBoard();
-       
+    // create the cards
+    for (let i = 0; i < numberOfCards; i++){
+        cardArray[i] = {id: i, shape: shapes[Math.floor(Math.random() * amountShapes)], colour: colours[Math.floor(Math.random() * amountColours)]};
     }
 
+    // creating a copy of cardArray to keep track of cards still playable for scorable function
+    let playableCards = [...cardArray];
+
+    // assign grid variable
+    const grid = document.querySelector('.grid');
+      
     // create the board
     function createBoard() {
         for (let j = 0; j < cardArray.length; j++) {
@@ -162,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.setAttribute('height', '100');
             card.setAttribute('class', 'playCard');
             card.appendChild(cardback.cloneNode(true)); // adds a copy of cardback
-            card.addEventListener('click', flipCard);   // activates flipcard function when a card is clicked
+            card.addEventListener('click', flipCard);
             grid.appendChild(card);
         }
     }
@@ -174,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const optionTwoId = cardsChosenId[1];
 
         if(cardsChosen[0].shape === cardsChosen[1].shape && cardsChosen[0].colour === cardsChosen[1].colour){
-            popup("You found a perfect match! +3 points");
+            alert("You found a perfect match!");
             cards[optionOneId].removeChild(cards[optionOneId].firstElementChild); // makes card blank
             cards[optionTwoId].removeChild(cards[optionTwoId].firstElementChild); // makes card blank
             cards[optionOneId].setAttribute('class', 'blank');              // changes class of matched cards
@@ -189,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scorable();
         }
         else if(cardsChosen[0].shape === cardsChosen[1].shape){
-            popup("You found a shape match! +1 point");
+            alert("You found a shape match!");
             cards[optionOneId].removeChild(cards[optionOneId].firstElementChild); // makes card blank
             cards[optionTwoId].removeChild(cards[optionTwoId].firstElementChild); // makes card blank
             cards[optionOneId].setAttribute('class', 'blank');              // changes class of matched cards
@@ -204,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scorable();
         }
         else if(cardsChosen[0].colour === cardsChosen[1].colour){
-            popup("You found a colour match! +1 point");
+            alert("You found a colour match!");
             cards[optionOneId].removeChild(cards[optionOneId].firstElementChild); // makes card blank
             cards[optionTwoId].removeChild(cards[optionTwoId].firstElementChild); // makes card blank
             cards[optionOneId].setAttribute('class', 'blank');              // changes class of matched cards
@@ -220,11 +192,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         else{
             if(players == 1){
-                popup("That is not a match. Try again!");
+                alert("That is not a match. Try again!");
             }
             else{
                 changePlayer();
-                popup("That is not a match. It is now player " + (playerTurn) + "'s turn!");
+                alert("That is not a match. It is now player " + (playerTurn) + "'s turn!");
             }
             cards[optionOneId].removeChild(cards[optionOneId].firstElementChild); // makes card blank
             cards[optionTwoId].removeChild(cards[optionTwoId].firstElementChild); // makes card blank
@@ -236,13 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cardsChosenId = [];   
         console.log("P1 " + p1Score); //testing
         console.log("P2 " + p2Score); //testing   
-    }
-
-    // displays message in the middle of the screen
-    function popup(text){
-        document.getElementById("notification").innerHTML = text;
-        console.log(document.getElementById("popup"));
-        document.getElementById("popup").style.display = "flex";
     }
 
     // reduces playableCards array for scorable function
@@ -357,26 +322,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         console.log("player turn after " + playerTurn); // testing
     }
-
+    
     // reveals the scores of any players playing
-    function scoreboard(){
-        if(players == 1){
-            document.getElementById("p1").style.display = "block";
-        }
-        else if(players == 2){
-            document.getElementById("p1").style.display = "block";
-            document.getElementById("p2").style.display = "block";
-        }
-        else if(players == 3){
+    function scoreboard(players){
+        switch(players) {                           // switch is not running!!!!!!!!!!!!!!!!
+            case 1:
+                document.getElementById("p1").style.display = "block";
+                console.log(test); // testing
+                break;
+            case 2:
+                document.getElementById("p1").style.display = "block";
+                document.getElementById("p2").style.display = "block";
+                break;
+            case 3:
                 document.getElementById("p1").style.display = "block";
                 document.getElementById("p2").style.display = "block";
                 document.getElementById("p3").style.display = "block";
-        }
-        else if(players == 4){
+                break;
+            case 4:
                 document.getElementById("p1").style.display = "block";
                 document.getElementById("p2").style.display = "block";
                 document.getElementById("p3").style.display = "block";
                 document.getElementById("p4").style.display = "block";
+                break;
         }
     }
+
+    createBoard();
+    
+  
 })
+

@@ -6,17 +6,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Card Flip Game</title>
 
-    <script src="/scripts.js"></script>
     <link rel="stylesheet" href="/styles.css">
+    <script src="/scripts.js" defer></script>
 
 </head>
 <body>
     
-    <h3>Player 1 Score: <span id="p1Score"></span></h3>
-    <h3>Player 2 Score: <span id="p2Score"></span></h3>
+    <div id="gameOptions">
+        <form action="">
+            <label for="players">How many players?</label><br>
+            <input type="radio" id="onePlayers" name="players" value="1" checked="checked">
+            <label for="onePlayers">1</label>
+            <input type="radio" id="twoPlayers" name="players" value="2">
+            <label for="twoPlayers">2</label>
+            <input type="radio" id="threePlayers" name="players" value="3">
+            <label for="threePlayers">3</label>
+            <input type="radio" id="fourPlayers" name="players" value="4">
+            <label for="fourPlayers">4</label><br>
 
-    <div class="grid">
-     
+            <label for="size">How large would you like the game?</label><br>
+            <input type="radio" id="fourByFour" name="size" value="4"  checked="checked">
+            <label for="fourByFour">4 x 4</label>
+            <input type="radio" id="sixBySix" name="size" value="6">
+            <label for="sixBySix">6 x 6</label>
+            <input type="radio" id="eightByEight" name="size" value="8">
+            <label for="eightByEight">8 x 8</label>
+            <input type="radio" id="tenByTen" name="size" value="10">
+            <label for="tenByTen">10 x 10</label>
+
+            <div class="slidecontainer">
+                <label for="shapeAmount">Amount of shapes</label>
+                <input type="range" min="1" max="10" value="3" class="slider" id="shapes" list="shapeAmount">
+                <datalist id="shapeAmount">
+                    <option value="1" label="1"></option>
+                    <option value="2" label="2"></option>
+                    <option value="3" label="3"></option>
+                    <option value="4" label="4"></option>
+                    <option value="5" label="5"></option>
+                    <option value="6" label="6"></option>
+                    <option value="7" label="7"></option>
+                    <option value="8" label="8"></option>
+                    <option value="9" label="9"></option>
+                    <option value="10" label="10"></option>
+                </datalist>
+            </div>
+
+            <div class="slidecontainer">
+                <label for="colourAmount">Amount of colours</label>
+                <input type="range" min="1" max="10" value="3" class="slider" id="colours" list="colourAmount">
+                <datalist id="colourAmount">
+                    <option value="1" label="1"></option>
+                    <option value="2" label="2"></option>
+                    <option value="3" label="3"></option>
+                    <option value="4" label="4"></option>
+                    <option value="5" label="5"></option>
+                    <option value="6" label="6"></option>
+                    <option value="7" label="7"></option>
+                    <option value="8" label="8"></option>
+                    <option value="9" label="9"></option>
+                    <option value="10" label="10"></option>
+                </datalist>
+            </div>
+
+
+            <button id="generate" type="button">Generate game</button>
+        </form> 
+    </div>
+
+
+    <h3 id="p1">Player 1 Score: <span id="p1Score"></span></h3>
+    <h3 id="p2">Player 2 Score: <span id="p2Score"></span></h3>
+    <h3 id="p3">Player 3 Score: <span id="p3Score"></span></h3>
+    <h3 id="p4">Player 4 Score: <span id="p4Score"></span></h3>
+
+    <div id="popup" onclick="this.style.display='none';">
+        <svg width ="500px" height = "150px">
+            <text id="notification" x="50%" y="50%" stroke="black" stroke-width="1" fill="grey"></text>
+        </svg>
+    </div>
+
+    <div id="grid">
+
     </div>
 
     <svg height="100" width="100">
