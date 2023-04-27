@@ -12,7 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("p2Score").innerHTML = p2Score;
     document.getElementById("p3Score").innerHTML = p3Score;
     document.getElementById("p4Score").innerHTML = p4Score;
-
+    let finalScores = "";
+    let success = new Audio('sounds/success.mp3');
+    let fail = new Audio('sounds/fail.mp3');
+    let end = new Audio('sounds/end.mp3');
+    
     //creates the back of the card
     const cardback = document.createElementNS('http://www.w3.org/2000/svg', 'text')
     cardback.setAttribute('x','25');
@@ -133,12 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         document.getElementById("grid").style.height = boardDimension + "px";
         document.getElementById("grid").style.width = boardDimension + "px";
-
-        // document.getElementById("p1").style.display = "block";
+        document.getElementById("scores").style.width = boardDimension + "px";
 
         scoreboard();
 
-        document.getElementById("gameOptions").style.display = "none";
+        document.getElementById("rulesGrid").style.display = "none";
 
         // create the cards
         for (let i = 0; i < numberOfCards; i++){
@@ -173,6 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const optionOneId = cardsChosenId[0];
         const optionTwoId = cardsChosenId[1];
 
+        // checks if both the shapes and colours match
         if(cardsChosen[0].shape === cardsChosen[1].shape && cardsChosen[0].colour === cardsChosen[1].colour){
             popup("You found a perfect match! +3 points");
             cards[optionOneId].removeChild(cards[optionOneId].firstElementChild); // makes card blank
@@ -184,10 +188,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 
             reducePlayableCards();
 
+            success.cloneNode().play();
+
             score(3);
 
             scorable();
         }
+
+        // checks if the shapes matches
         else if(cardsChosen[0].shape === cardsChosen[1].shape){
             popup("You found a shape match! +1 point");
             cards[optionOneId].removeChild(cards[optionOneId].firstElementChild); // makes card blank
@@ -199,10 +207,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             reducePlayableCards();
 
+            success.cloneNode().play();
+
             score(1);
 
             scorable();
         }
+
+        // checks if the colours match
         else if(cardsChosen[0].colour === cardsChosen[1].colour){
             popup("You found a colour match! +1 point");
             cards[optionOneId].removeChild(cards[optionOneId].firstElementChild); // makes card blank
@@ -214,11 +226,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             reducePlayableCards();
 
+            success.cloneNode().play();
+
             score(1);
 
             scorable();
         }
+
+        // if the above 3 are not correct then the shapes or colours do not match
         else{
+            // changes message if only 1 player
+            fail.cloneNode().play();
+
             if(players == 1){
                 popup("That is not a match. Try again!");
             }
@@ -231,17 +250,13 @@ document.addEventListener('DOMContentLoaded', () => {
             cards[optionOneId].appendChild(cardback.cloneNode(true)); // returns card to cardback
             cards[optionTwoId].appendChild(cardback.cloneNode(true)); // returns card to cardback
         }
-
         cardsChosen = [];
         cardsChosenId = [];   
-        console.log("P1 " + p1Score); //testing
-        console.log("P2 " + p2Score); //testing   
     }
 
     // displays message in the middle of the screen
     function popup(text){
         document.getElementById("notification").innerHTML = text;
-        console.log(document.getElementById("popup"));
         document.getElementById("popup").style.display = "flex";
     }
 
@@ -257,37 +272,52 @@ document.addEventListener('DOMContentLoaded', () => {
         if (remove > -1) { // only splice array when item is found
             playableCards.splice(remove, 1);
         }
-
-        console.log(playableCards); //testing
-        console.log(cardArray); //testing        
     }
 
 
     //check there are still cards that are scorable
     function scorable(){
         if(playableCards.length == 0){
-            alert("There are no more scorable pairs remaining!");
+            end.play();
+            gameEnd("There are no more scorable pairs remaining!");
         }
         else{
             for (let k = 0; k < playableCards.length-1; k++){
                 for (l = k; l < playableCards.length-1; l++){
                     if(playableCards[k].shape == playableCards[l+1].shape || playableCards[k].colour == playableCards[l+1].colour){
-                        console.log(playableCards[k].shape == playableCards[l+1].shape);
-                        console.log(playableCards[k].colour == playableCards[l+1].colour);
                         return;
                     }
                     else if (k == playableCards.length-2 && l == playableCards.length-2){
-                        alert("There are no more scorable pairs remaining!");
+                        end.play();
+                        gameEnd("There are no more scorable pairs remaining!");
                     }
                 }
             }
         }
     }
 
+    // once there are no more pairs will display the final scores depending on the number of players
+    function gameEnd(text){
+        if(players == 1){
+            finalScores = "Player 1 Score: " + p1Score;
+        }
+        else if(players == 2){
+            finalScores = "Player 1's Score: " + p1Score + "<br> Player 2's Score: " + p2Score;
+        }
+        else if(players == 3){
+            finalScores = "Player 1's Score: " + p1Score + "<br> Player 2's Score: " + p2Score + "<br> Player 3's Score: " + p3Score;
+        }
+        else if(players == 4){
+            finalScores = "Player 1's Score: " + p1Score + "<br> Player 2's Score: " + p2Score + "<br> Player 3's Score: " + p3Score + "<br> Player 4's Score: " + p4Score;
+        }
+        document.getElementById("endText").innerHTML = text + "<br>" + finalScores;
+        document.getElementById("end").style.display = "grid";
+    }
+
     // flip card
     function flipCard() {
         let cardId = this.getAttribute('data-id');
-        if(cardId != cardsChosenId[0]) {    // checks to ensure not selecting the same card again
+        if(cardId != cardsChosenId[0] && cardsChosen.length != 2) {    // checks to ensure not selecting the same card again and not selecting more than 2 cards
             cardsChosen.push(cardArray[cardId]);    // creates an array of the 2 cards selected
             cardsChosenId.push(cardId);             // creates an array of the cardId's of the 2 cards selected
             this.removeChild(this.firstElementChild);
@@ -295,9 +325,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.firstElementChild.setAttribute('fill', cardArray[cardId].colour) // applies the colour of the card as defined in cardArray
             if (cardsChosen.length == 2) { // when 2 cards have been selected run checkForMatch
                 setTimeout(checkForMatch, 500); // delays match check
-            }    
-        }
-        
+            }
+        } 
     }
 
     // assign score based on player's turn
@@ -324,8 +353,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // changes the active player
     function changePlayer(){
-        console.log("players " + players); // testing
-        console.log("player turn before " + playerTurn); // testing
         switch(playerTurn) {
             case 1:
                 if(players == 1){
@@ -355,7 +382,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 playerTurn = 1;
                 break;
         }
-        console.log("player turn after " + playerTurn); // testing
     }
 
     // reveals the scores of any players playing
@@ -379,4 +405,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById("p4").style.display = "block";
         }
     }
+
+    // refreshes the page to restart the game once complete
+    function refreshPage(){
+        window.location.reload();
+    } 
+
+    // Binds the button's click event to the generateGame function
+    document.getElementById("playAgain").addEventListener("click",a=>{refreshPage()});
 })
