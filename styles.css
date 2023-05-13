@@ -201,6 +201,11 @@ label {
     grid-template-areas: 'endleft endmiddle endright';
     grid-template-columns: 20% 60% 20%;
     grid-template-rows: auto;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
 }
 
 #endLeft{

@@ -411,6 +411,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.reload();
     } 
 
-    // Binds the button's click event to the generateGame function
+    // Binds the button's click event to the refreshPage function
     document.getElementById("playAgain").addEventListener("click",a=>{refreshPage()});
 })
